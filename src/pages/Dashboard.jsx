@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
-import { Sparkles, Brain, FileText, Download, ArrowLeft, Heart, Zap, Globe, Share2, Compass, Target, Mic, MicOff, AlertCircle, TrendingUp, CheckCircle, ShieldCheck, Calendar, Activity, Copy, DollarSign, Award, Users, Search, BarChart3, Fingerprint } from 'lucide-react';
+import { Sparkles, Brain, FileText, Download, ArrowLeft, Heart, Zap, Globe, Share2, Compass, Target, Mic, MicOff, AlertCircle, TrendingUp, CheckCircle, ShieldCheck, Calendar, Activity, Copy, DollarSign, Award, Users, Search, BarChart3, Fingerprint, Quote } from 'lucide-react';
 
 const Dashboard = ({ onBack, lang }) => {
   const [step, setStep] = useState(1);
@@ -179,20 +179,7 @@ const Dashboard = ({ onBack, lang }) => {
     <div className="container" style={{ padding: '40px 0 120px' }}>
       <AnimatePresence mode="wait">
         {step === 1 ? (
-          <motion.div key="in" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            {/* Wisdom of Resilience: Random Thought Header */}
-            {thought && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                style={{ marginBottom: '40px', padding: '32px', background: 'var(--glass-glow)', borderRadius: '24px', border: '1px solid var(--glass-border)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
-              >
-                <Quote size={40} style={{ position: 'absolute', top: '10px', left: '20px', opacity: 0.1 }} />
-                <p style={{ fontSize: '20px', fontStyle: 'italic', fontWeight: '500', color: 'var(--text-primary)', marginBottom: '12px', lineHeight: '1.6' }}>"{thought.text}"</p>
-                <p style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary-soft)', textTransform: 'uppercase', letterSpacing: '1px' }}>— {thought.author}</p>
-              </motion.div>
-            )}
-
+          <motion.div key="in" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }}>
             <div style={{ marginBottom: '32px' }}>
               <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <ArrowLeft size={16} /> {content.back}
@@ -249,6 +236,19 @@ const Dashboard = ({ onBack, lang }) => {
               </div>
               <button className="secondary-btn" onClick={() => setStep(1)}>{content.new}</button>
             </div>
+
+            {/* Wisdom of Resilience: Random Thought Header Moved to Dashboard Results */}
+            {thought && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ marginBottom: '32px', padding: '24px 40px', background: 'var(--glass-glow)', borderRadius: '24px', border: '1px solid var(--glass-border)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
+              >
+                <Quote size={32} style={{ position: 'absolute', top: '8px', left: '16px', opacity: 0.1 }} />
+                <p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: '500', color: 'var(--text-primary)', marginBottom: '8px', lineHeight: '1.5' }}>"{thought.text}"</p>
+                <p style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '2px' }}>— {thought.author}</p>
+              </motion.div>
+            )}
 
             <div className="dash-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '28px' }}>
               
