@@ -63,9 +63,9 @@ h1, h2, h3, .logo-text {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
 }
 
 .gradient-text {
@@ -79,32 +79,32 @@ h1, h2, h3, .logo-text {
   background: var(--wellness-gradient);
   background-size: 200% auto;
   color: white;
-  padding: 14px 32px;
+  padding: 16px 36px;
   border-radius: 100px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   cursor: pointer;
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 1rem;
-  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.25);
+  font-size: 1.05rem;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
 }
 
 .primary-btn:hover {
   background-position: right center;
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.4);
 }
 
 .secondary-btn {
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--glass-border);
-  padding: 14px 32px;
+  padding: 16px 36px;
   border-radius: 100px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
   display: inline-flex;
@@ -130,7 +130,7 @@ h1, h2, h3, .logo-text {
 
 /* Navbar Classes */
 .navbar {
-  height: 90px;
+  height: 96px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   position: fixed;
@@ -154,35 +154,36 @@ h1, h2, h3, .logo-text {
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   cursor: pointer;
 }
 
 .logo-icon-box {
   background: var(--wellness-gradient);
-  padding: 8px;
-  border-radius: 12px;
+  padding: 10px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .logo-text {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
 }
 
 .navbar-tools {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .tool-btn {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
-  padding: 10px;
+  padding: 12px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -194,12 +195,13 @@ h1, h2, h3, .logo-text {
 .tool-btn:hover {
   background: var(--bg-secondary);
   border-color: var(--primary);
+  transform: scale(1.1);
 }
 
 .lang-btn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 100px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
 }
 
@@ -210,7 +212,16 @@ h1, h2, h3, .logo-text {
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-15px); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 3s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 10px 50px rgba(139, 92, 246, 0.6); }
 }
 
 /* Voice Button Pulse */
@@ -229,7 +240,7 @@ h1, h2, h3, .logo-text {
 
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 /* Responsive Grid Base */
@@ -246,8 +257,8 @@ h1, h2, h3, .logo-text {
 }
 
 @media (max-width: 768px) {
-  .container { padding: 0 20px; }
-  h1 { font-size: 2.8rem !important; }
+  .container { padding: 0 24px; }
+  h1 { font-size: 3.2rem !important; }
   .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
   .navbar { height: 80px; }
   .dash-grid { grid-template-columns: 1fr !important; }
@@ -256,11 +267,11 @@ h1, h2, h3, .logo-text {
 }
 
 @media (max-width: 640px) {
-  .primary-btn { padding: 12px 20px; font-size: 0.9rem; }
-  .btn-label { display: none; }
+  .primary-btn { padding: 14px 24px; font-size: 0.95rem; }
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: var(--primary-soft); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }

@@ -62,8 +62,6 @@ app.post('/api/translate', (req, res) => {
   const { text } = req.body;
   const timestamp = new Date().toISOString();
   
-  console.log(`[${timestamp}] New analysis request received.`);
-
   if (!text || text.length < 15) {
     return res.status(400).json({ error: "Narrative too short for deep analysis." });
   }
@@ -71,19 +69,22 @@ app.post('/api/translate', (req, res) => {
   const lowercaseInput = text.toLowerCase();
   const detectedSkills = [];
   const careerPaths = new Set();
+  const highlightedKeywords = [];
   let totalWeightedScore = 0;
   let activeWeights = 0;
 
-  // 1. Skill Extraction
+  // 1. Skill Extraction & Keyword Tracking
   skillLibrary.forEach(category => {
-    const frequency = category.keywords.filter(kw => lowercaseInput.includes(kw)).length;
-    if (frequency > 0) {
-      const baseScore = Math.floor(Math.random() * 10) + 85; // Base high score for the demo
+    const matched = category.keywords.filter(kw => lowercaseInput.includes(kw));
+    if (matched.length > 0) {
+      highlightedKeywords.push(...matched);
+      const baseScore = Math.floor(Math.random() * 10) + 85; 
       detectedSkills.push({
         id: category.id,
         name: category.name,
         description: category.description,
-        score: Math.min(baseScore + frequency, 99)
+        score: Math.min(baseScore + matched.length, 99),
+        evidence: matched
       });
       category.careers.forEach(c => careerPaths.add(c));
       totalWeightedScore += (category.weight * baseScore);
@@ -91,46 +92,56 @@ app.post('/api/translate', (req, res) => {
     }
   });
 
-  // 2. Resilience Calculation (Natural Language Logic)
+  // 2. Resilience Calculation
   let resilienceBase = 70;
-  powerWords.high.forEach(word => { if (lowercaseInput.includes(word)) resilienceBase += 4; });
-  powerWords.mid.forEach(word => { if (lowercaseInput.includes(word)) resilienceBase += 2; });
+  let foundPowerWords = [];
+  powerWords.high.forEach(word => { 
+    if (lowercaseInput.includes(word)) {
+      resilienceBase += 4;
+      foundPowerWords.push(word);
+    }
+  });
+  powerWords.mid.forEach(word => { 
+    if (lowercaseInput.includes(word)) {
+      resilienceBase += 2;
+      foundPowerWords.push(word);
+    }
+  });
   const finalResilience = Math.min(resilienceBase, 98);
 
-  // 3. Market Readiness (Weighted Average)
+  // 3. Market Readiness & Hiring Probability
   const averageSkillScore = activeWeights > 0 ? (totalWeightedScore / activeWeights) : 80;
   const marketReadiness = Math.round((averageSkillScore * 0.6) + (finalResilience * 0.4));
+  const hiringProbability = Math.round(marketReadiness * 0.85 + (Math.random() * 10));
 
-  // 4. Gap Discovery (Innovative identification)
+  // 4. Gap Discovery
   const masterSkillList = ["Data Literacy", "Digital Collaboration", "Technical Agility", "Stakeholder Management"];
   const currentSkillNames = detectedSkills.map(s => s.name);
-  const gaps = masterSkillList
-    .filter(skill => !currentSkillNames.includes(skill))
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 2);
+  const gaps = masterSkillList.filter(skill => !currentSkillNames.includes(skill)).slice(0, 2);
 
-  // 5. Response Output
+  // 5. ROADMAP GENERATION (The new innovative part)
+  const roadmap = {
+    day30: "Identity Re-establishment: Update LinkedIn with extracted competencies and connect with 5 industry mentors.",
+    day60: "Skill Bridging: Complete a certified course in " + (gaps[0] || "Digital Leadership") + " and build a portfolio project.",
+    day90: "Market Re-entry: Begin strategic outreach to companies valuing resilience and multi-dimensional leadership."
+  };
+
   const analysisId = `VH-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
   
-  console.log(`[${timestamp}] Analysis ${analysisId} completed. Readiness: ${marketReadiness}%`);
-
   res.json({
     analysisId,
     skills: detectedSkills.length > 0 ? detectedSkills : [{ name: "General Leadership", score: 85, description: "Broad-spectrum adaptability and core responsibility." }],
     readinessScore: marketReadiness,
     resilienceScore: finalResilience,
+    hiringProbability: Math.min(hiringProbability, 99),
     careers: Array.from(careerPaths).length > 0 ? Array.from(careerPaths).slice(0, 3) : ["Project Lead", "Operations Coordinator"],
     gaps: gaps.length > 0 ? gaps : ["Advanced Technical Integration"],
+    roadmap,
+    evidence: foundPowerWords.concat(highlightedKeywords),
     timestamp
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`
-  ==============================================
-    VisibleHer AI Backend Engine v2.0
-    Running at: http://localhost:${PORT}
-    Status: ONLINE (Waiting for Identity Mapping)
-  ==============================================
-  `);
+  console.log(`VisibleHer Backend Engine v3.0 running at http://localhost:${PORT}`);
 });
