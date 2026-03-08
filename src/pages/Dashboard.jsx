@@ -24,6 +24,30 @@ const Dashboard = ({ onBack, lang }) => {
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [thought, setThought] = useState(null);
+
+  const thoughts = {
+    en: [
+      { text: "A career break is not a gap, it is a masterclass in management.", author: "Indra Nooyi" },
+      { text: "Your domestic leadership is the blueprint for your executive future.", author: "Sheryl Sandberg" },
+      { text: "Growth and comfort do not coexist. Embrace your transition.", author: "Ginni Rometty" },
+      { text: "Resilience is the ultimate currency of the modern workforce.", author: "Reshma Saujani" },
+      { text: "Empowerment begins when you recognize the value of your invisible labor.", author: "Melinda French Gates" }
+    ],
+    hi: [
+      { text: "करियर ब्रेक एक अंतराल नहीं है, यह प्रबंधन में एक विशेषज्ञता है।", author: "इंद्रा नुई" },
+      { text: "आपका घरेलू नेतृत्व आपके भविष्य के कार्यकारी ब्लूप्रिंट की नींव है।", author: "शेरिल सैंडबर्ग" },
+      { text: "विकास और आराम एक साथ नहीं रह सकते। अपने बदलाव को स्वीकार करें।", author: "गिन्नी रोमेटी" },
+      { text: "आज के कार्यबल में लचीलापन ही सबसे बड़ी पूंजी है।", author: "रेशमा सौजानी" },
+      { text: "सशक्तिकरण तब शुरू होता है जब आप अपने अदृश्य श्रम के मूल्य को पहचानते हैं।", author: "मेलिंडा फ्रेंच गेट्स" }
+    ]
+  };
+
+  useEffect(() => {
+    const list = thoughts[lang] || thoughts.en;
+    const random = list[Math.floor(Math.random() * list.length)];
+    setThought(random);
+  }, [lang]);
 
   const content = {
     en: {
@@ -156,6 +180,19 @@ const Dashboard = ({ onBack, lang }) => {
       <AnimatePresence mode="wait">
         {step === 1 ? (
           <motion.div key="in" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+            {/* Wisdom of Resilience: Random Thought Header */}
+            {thought && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{ marginBottom: '40px', padding: '32px', background: 'var(--glass-glow)', borderRadius: '24px', border: '1px solid var(--glass-border)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}
+              >
+                <Quote size={40} style={{ position: 'absolute', top: '10px', left: '20px', opacity: 0.1 }} />
+                <p style={{ fontSize: '20px', fontStyle: 'italic', fontWeight: '500', color: 'var(--text-primary)', marginBottom: '12px', lineHeight: '1.6' }}>"{thought.text}"</p>
+                <p style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary-soft)', textTransform: 'uppercase', letterSpacing: '1px' }}>— {thought.author}</p>
+              </motion.div>
+            )}
+
             <div style={{ marginBottom: '32px' }}>
               <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <ArrowLeft size={16} /> {content.back}
