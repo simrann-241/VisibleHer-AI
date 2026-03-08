@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
-import { Sparkles, Brain, FileText, Download, ArrowLeft, Heart, Zap, Globe, Share2, Compass, Target, Mic, MicOff, AlertCircle, TrendingUp, CheckCircle, ShieldCheck, Calendar, Activity } from 'lucide-react';
-import { translateSkills, calculateReintegrationScore } from '../utils/skillMapper';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { Sparkles, Brain, FileText, Download, ArrowLeft, Heart, Zap, Globe, Share2, Compass, Target, Mic, MicOff, AlertCircle, TrendingUp, CheckCircle, ShieldCheck, Calendar, Activity, Copy, DollarSign, Award, Users, Search, BarChart3, Fingerprint } from 'lucide-react';
 
 const Dashboard = ({ onBack, lang }) => {
   const [step, setStep] = useState(1);
@@ -16,11 +15,15 @@ const Dashboard = ({ onBack, lang }) => {
     gaps: [],
     hiringProb: 0,
     roadmap: null,
-    evidence: []
+    evidence: [],
+    invisibleLaborValue: 0,
+    perception: { confidence: 0, strategy: 0, empathy: 0 },
+    bio: ""
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const content = {
     en: {
@@ -41,7 +44,12 @@ const Dashboard = ({ onBack, lang }) => {
       new: "New Analysis",
       hiring: "Hiring Availability Probability",
       roadmap: "30-60-90 Day Success Roadmap",
-      evidence: "Evidence-Based Markers"
+      evidence: "Evidence-Based Markers",
+      marketValue: "Market worth of Invisible Labor",
+      bio: "Professional Identity Statement",
+      perception: "Recruiter Perception Analysis",
+      copy: "Copy Bio",
+      copied: "Copied!"
     },
     hi: {
       title: "अपनी नेतृत्व यात्रा को पहचानें",
@@ -61,7 +69,12 @@ const Dashboard = ({ onBack, lang }) => {
       new: "नया विश्लेषण",
       hiring: "भर्ती की संभावना",
       roadmap: "90 दिन का सफलता रोडमैप",
-      evidence: "प्रमाण-आधारित संकेत"
+      evidence: "प्रमाण-आधारित संकेत",
+      marketValue: "अदृश्य श्रम का बाजार मूल्य",
+      bio: "पेशेवर पहचान वक्तव्य",
+      perception: "भर्ती धारणा विश्लेषण",
+      copy: "बायो कॉपी करें",
+      copied: "कॉपी हो गया!"
     }
   }[lang];
 
@@ -91,7 +104,7 @@ const Dashboard = ({ onBack, lang }) => {
       const response = await fetch('http://localhost:5001/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: inputText }),
+        body: JSON.stringify({ text: inputText, lang }),
       });
       const data = await response.json();
       setResults({ 
@@ -103,14 +116,23 @@ const Dashboard = ({ onBack, lang }) => {
         gaps: data.gaps || [],
         hiringProb: data.hiringProbability || 0,
         roadmap: data.roadmap || null,
-        evidence: data.evidence || []
+        evidence: data.evidence || [],
+        invisibleLaborValue: data.invisibleLaborValue || 50000,
+        perception: data.perception || { confidence: 0, strategy: 0, empathy: 0 },
+        bio: data.bio || ""
       });
       setStep(2);
     } catch (err) {
-      setStep(2); // Fallback to local logic (already in v2.0 but simplified for brevity here)
+      setStep(2); 
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const copyBio = () => {
+    navigator.clipboard.writeText(results.bio);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const downloadReport = () => {
@@ -122,6 +144,12 @@ const Dashboard = ({ onBack, lang }) => {
     a.download = `IdentityReport_${results.analysisId}.txt`;
     a.click();
   };
+
+  const radarData = Object.entries(results.perception).map(([key, value]) => ({
+    subject: key.charAt(0).toUpperCase() + key.slice(1),
+    A: value,
+    fullMark: 100,
+  }));
 
   return (
     <div className="container" style={{ padding: '40px 0 120px' }}>
@@ -152,22 +180,69 @@ const Dashboard = ({ onBack, lang }) => {
               <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '13px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}><ShieldCheck size={16} /> Data anonymized & secured</span>
                 <button className="primary-btn" onClick={handleSubmit} disabled={isLoading}>
-                  {isLoading ? "Processing Architecture..." : <>{content.btnAnalyze} <Sparkles size={18} /></>}
+                  {isLoading ? "Analyzing Invisible Labor..." : <>{content.btnAnalyze} <Sparkles size={18} /></>}
                 </button>
               </div>
             </div>
           </motion.div>
         ) : (
           <motion.div key="res" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+            
+            {/* Banner: Invisible Labor Market Valuation */}
+            <motion.div 
+              initial={{ y: -20, opacity: 0 }} 
+              animate={{ y: 0, opacity: 1 }} 
+              className="glass-card" 
+              style={{ marginBottom: '32px', padding: '24px 40px', background: 'linear-gradient(90deg, var(--bg-secondary), var(--glass-glow))', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div style={{ background: 'var(--wellness-gradient)', padding: '12px', borderRadius: '16px' }}><DollarSign size={24} color="white" /></div>
+                <div>
+                   <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)', fontWeight: '700' }}>{content.marketValue}</div>
+                   <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--accent)' }}>${results.invisibleLaborValue.toLocaleString()} / YEAR <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: '400' }}>Equivalent Seniority</span></div>
+                </div>
+              </div>
+              <Compass size={40} className="float" style={{ opacity: 0.2 }} />
+            </motion.div>
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
               <div>
-                <span className="analysis-id">V-INTEL-ID: {results.analysisId}</span>
+                <span className="analysis-id">V-INTEL-v4.0: {results.analysisId}</span>
                 <h2 style={{ fontSize: '42px', fontWeight: '800' }} className="gradient-text">{lang === 'en' ? "Professional Identity DNA" : "पेशेवर पहचान डीएनए"}</h2>
               </div>
               <button className="secondary-btn" onClick={() => setStep(1)}>{content.new}</button>
             </div>
 
             <div className="dash-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '28px' }}>
+              
+              {/* Main Professional Bio Generation */}
+              <div className="glass-card" style={{ gridColumn: 'span 8', padding: '40px', position: 'relative' }}>
+                <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}><Award size={20} color="var(--primary)" /> {content.bio}</h3>
+                <div style={{ background: 'var(--bg-secondary)', padding: '32px', borderRadius: '24px', border: '1px solid var(--glass-border)', position: 'relative' }}>
+                   <p style={{ fontSize: '17px', color: 'var(--text-primary)', lineHeight: '1.8', fontStyle: 'italic', marginBottom: '24px' }}>"{results.bio}"</p>
+                   <button 
+                    onClick={copyBio} 
+                    style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'var(--bg-primary)', border: '1px solid var(--glass-border)', color: copied ? 'var(--accent)' : 'var(--text-primary)', padding: '8px 16px', borderRadius: '100px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                   >
+                     {copied ? <CheckCircle size={14} /> : <Copy size={14} />} {copied ? content.copied : content.copy}
+                   </button>
+                </div>
+              </div>
+
+              {/* Perception Analysis Tracker */}
+              <div className="glass-card" style={{ gridColumn: 'span 4' }}>
+                <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}><Users size={20} color="var(--secondary)" /> {content.perception}</h3>
+                <div style={{ height: '240px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                      <PolarGrid stroke="var(--glass-border)" />
+                      <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 11, fontWeight: '700' }} />
+                      <Radar name="Perception" dataKey="A" stroke="var(--secondary)" fill="var(--secondary)" fillOpacity={0.6} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
               {/* Readiness Score Card */}
               <div className="glass-card" style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
                 <h3 style={{ fontSize: '14px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px', color: 'var(--text-muted)' }}>{content.readiness}</h3>
@@ -189,7 +264,7 @@ const Dashboard = ({ onBack, lang }) => {
                 </div>
               </div>
 
-              {/* Dynamic Roadmap - NEW INNOVATIVE FEATURE */}
+              {/* Dynamic Roadmap */}
               <div className="glass-card" style={{ gridColumn: 'span 8', padding: '40px' }}>
                 <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}><Calendar size={20} color="var(--primary)" /> {content.roadmap}</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
@@ -206,7 +281,7 @@ const Dashboard = ({ onBack, lang }) => {
                 </div>
               </div>
 
-              {/* Evidence Panel - NEW INNOVATIVE FEATURE */}
+              {/* Evidence Markers */}
               <div className="glass-card" style={{ gridColumn: 'span 4' }}>
                 <h3 style={{ fontSize: '16px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}><Search size={18} color="var(--accent)" /> {content.evidence}</h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -216,9 +291,9 @@ const Dashboard = ({ onBack, lang }) => {
                 </div>
               </div>
 
-              {/* Skills Visual */}
+              {/* Professional Skills Grid */}
               <div className="glass-card" style={{ gridColumn: 'span 8' }}>
-                <h3 style={{ fontSize: '16px', marginBottom: '16px' }}>{content.capability}</h3>
+                <h3 style={{ fontSize: '16px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}><Fingerprint size={18} color="var(--primary)" /> {content.capability}</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                    {results.skills.map((s, i) => (
                      <div key={i} style={{ background: 'var(--bg-primary)', padding: '16px', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
@@ -232,7 +307,7 @@ const Dashboard = ({ onBack, lang }) => {
                 </div>
               </div>
 
-              {/* Career Bridge */}
+              {/* Career Bridge & Gaps */}
               <div className="glass-card" style={{ gridColumn: 'span 6' }}>
                 <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}><Compass size={20} /> {content.careers}</h3>
                 {results.careers?.map((c, i) => (
@@ -243,7 +318,6 @@ const Dashboard = ({ onBack, lang }) => {
                 ))}
               </div>
 
-              {/* Gap Analysis */}
               <div className="glass-card" style={{ gridColumn: 'span 6' }}>
                 <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}><Target size={20} /> {content.gaps}</h3>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
@@ -253,15 +327,15 @@ const Dashboard = ({ onBack, lang }) => {
                 </div>
               </div>
 
-              {/* Digital Certificate Summary */}
-              <div className="glass-card" style={{ gridColumn: 'span 12', padding: '50px', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'var(--primary)', filter: 'blur(100px)', opacity: 0.1 }}></div>
-                <h3 style={{ textAlign: 'center', fontSize: '24px', fontWeight: '800', marginBottom: '40px' }} className="gradient-text">{content.summary}</h3>
-                <div style={{ maxWidth: '800px', margin: '0 auto', fontSize: '18px', textAlign: 'center', color: 'var(--text-secondary)', lineHeight: '1.8', fontStyle: 'italic' }}>
-                   "VisibleHer AI authentication confirms that the candidate possesses an elite **Resilience Quotient of ${results.resilience}%** and is currently projected with a **${results.hiringProb}% market compatibility**. This blueprint verifies that domestic leadership experience matches the core infrastructure of high-impact roles in **${results.careers.join(' and ')}**."
+              {/* Digital Certificate Footer */}
+              <div className="glass-card" style={{ gridColumn: 'span 12', padding: '50px', position: 'relative', textAlign: 'center' }}>
+                <div style={{ position: 'absolute', top: '-20px', left: '-20px', opacity: 0.05 }}><Award size={200} /></div>
+                <h3 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '40px' }} className="gradient-text">{content.summary}</h3>
+                <div style={{ maxWidth: '800px', margin: '0 auto', fontSize: '18px', color: 'var(--text-secondary)', lineHeight: '1.8', fontStyle: 'italic' }}>
+                   "VisibleHer AI protocol v4.0 certifies an elite **Resilience Quotient of ${results.resilience}%**. Analysis identifies a high performance baseline in **${results.skills.map(s => s.name).slice(0, 2).join(' & ')}**. This professional is currently valued at **$${results.invisibleLaborValue.toLocaleString()}** market parity."
                 </div>
                 <div style={{ marginTop: '50px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                  <button className="primary-btn" onClick={downloadReport}><Download size={20} /> {content.download}</button>
+                  <button className="primary-btn pulse-glow" onClick={downloadReport}><Download size={20} /> {content.download}</button>
                 </div>
               </div>
             </div>
@@ -270,17 +344,10 @@ const Dashboard = ({ onBack, lang }) => {
       </AnimatePresence>
 
       <style>{`
-        .analysis-id { background: var(--glass-glow); padding: 6px 16px; border-radius: 100px; color: var(--primary-soft); font-size: 11px; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 20px; }
+        .analysis-id { background: var(--glass-glow); padding: 6px 16px; border-radius: 100px; color: var(--primary-soft); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--glass-border); }
       `}</style>
     </div>
   );
 };
-
-// Simple search icon component
-const Search = ({ size, color, style }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-  </svg>
-);
 
 export default Dashboard;
